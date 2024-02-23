@@ -1,5 +1,6 @@
 package it.epicode.w7d5.event_management.Models.entities;
 
+import it.epicode.w7d5.event_management.exceptions.SubscriptionException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -32,10 +33,13 @@ public class Event {
 
     @Column(nullable = false)
     @Transient
-    private int placesAvailable;
+    private int subscriptions;
 
     @Column(nullable = false)
     private int totalPlaces;
+
+    @Column(nullable = false)
+    private boolean soldOut = false;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -45,11 +49,20 @@ public class Event {
     )
     private List<User> subscribedUsers = new ArrayList<>();
 
-    public Event(String title, String description, LocalDate date, int placesAvailable, int totalPlaces) {
+    public Event(String title, String description, LocalDate date, int totalPlaces) {
         this.title = title;
         this.description = description;
         this.date = date;
-        this.placesAvailable = placesAvailable;
         this.totalPlaces = totalPlaces;
+
+    }
+
+    public void addSubscription(User user) throws SubscriptionException {
+        if (subscribedUsers.contains(user))
+            throw new SubscriptionException("User with id='" + user.getId() + " is already subscribed to this event. Cannot subscribe");
+        if (soldOut)
+            throw new SubscriptionException("Event is sold out. Cannot subscribe");
+        subscribedUsers.add(user);
+        if (subscribedUsers.size() == totalPlaces) soldOut = true;
     }
 }
