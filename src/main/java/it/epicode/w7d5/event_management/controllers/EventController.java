@@ -4,10 +4,7 @@ import it.epicode.w7d5.event_management.Models.entities.Event;
 import it.epicode.w7d5.event_management.Models.reqDTO.EventDTO;
 import it.epicode.w7d5.event_management.Models.reqDTO.SubscriptionDTO;
 import it.epicode.w7d5.event_management.Models.resDTO.ConfirmRes;
-import it.epicode.w7d5.event_management.exceptions.BadRequestException;
-import it.epicode.w7d5.event_management.exceptions.NotFoundException;
-import it.epicode.w7d5.event_management.exceptions.SubscriptionException;
-import it.epicode.w7d5.event_management.exceptions.ValidationMessages;
+import it.epicode.w7d5.event_management.exceptions.*;
 import it.epicode.w7d5.event_management.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -25,8 +23,18 @@ public class EventController {
     EventService eventSvc;
 
     @GetMapping("/events")
-    public Page<Event> getAll(Pageable pageable) {
+    public Page<Event> getAll(@RequestParam(required = false) UUID userid, Pageable pageable) {
         return eventSvc.getAll(pageable);
+    }
+
+    @GetMapping("/events/user/{userId}")
+    public List<Event> getByUserId(@PathVariable UUID userId) throws BadRequestException, UnauthorizedException {
+        return eventSvc.findByUserId(userId);
+    }
+    @PreAuthorize("hasAuthority('EVENT_ORGANIZER')")
+    @GetMapping("/events/admin/user/{userId}")
+    public List<Event> getByUserIdForAdmin(@PathVariable UUID userId) throws BadRequestException, UnauthorizedException {
+        return eventSvc.findByUserIdWithoutControls(userId);
     }
 
     @GetMapping("/events/{id}")
@@ -51,11 +59,22 @@ public class EventController {
     }
     @PatchMapping("/events/{id}/user-subscribe")
     public ConfirmRes subscribe(@RequestBody @Validated SubscriptionDTO subscriptionDTO,
-                                BindingResult validation, @PathVariable UUID id) throws SubscriptionException, BadRequestException {
+                                BindingResult validation, @PathVariable UUID id) throws SubscriptionException, BadRequestException, UnauthorizedException {
         if (validation.hasErrors())
             throw new BadRequestException(ValidationMessages.generateValidationErrorMessage(validation));
         try {
         return eventSvc.subscribeUserToEvent(id, UUID.fromString(subscriptionDTO.userId()));
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("'userId' field is malformed since it doesn't respect the Universal Unique ID pattern");
+        }
+    }
+    @PatchMapping("/events/{id}/user-unsubscribe")
+    public ConfirmRes unsubscribe(@RequestBody @Validated SubscriptionDTO subscriptionDTO,
+                                BindingResult validation, @PathVariable UUID id) throws SubscriptionException, BadRequestException, UnauthorizedException {
+        if (validation.hasErrors())
+            throw new BadRequestException(ValidationMessages.generateValidationErrorMessage(validation));
+        try {
+        return eventSvc.unsubscribeUserFromEvent(id, UUID.fromString(subscriptionDTO.userId()));
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("'userId' field is malformed since it doesn't respect the Universal Unique ID pattern");
         }

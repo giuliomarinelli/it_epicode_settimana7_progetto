@@ -38,7 +38,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
-    @JsonIgnore
+        @JsonIgnore
     @ManyToMany(mappedBy = "subscribedUsers", fetch = FetchType.EAGER)
     private List<Event> events;
 

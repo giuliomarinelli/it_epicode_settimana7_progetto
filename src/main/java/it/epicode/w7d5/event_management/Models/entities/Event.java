@@ -1,5 +1,6 @@
 package it.epicode.w7d5.event_management.Models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.epicode.w7d5.event_management.exceptions.SubscriptionException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -44,6 +45,7 @@ public class Event {
     @Column(nullable = false)
     private boolean soldOut = false;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "events_users",
@@ -69,4 +71,13 @@ public class Event {
         subscribedUsers.add(user);
         if (subscribedUsers.size() == totalPlaces) soldOut = true;
     }
+
+    public void removeSubscription(User user) throws SubscriptionException {
+        if (!subscribedUsers.contains(user))
+            throw new SubscriptionException("User with id='" + user.getId() + " is not subscribed to the event. Cannot unsubscribe");
+        if (soldOut) soldOut = false;
+        subscribedUsers.remove(user);
+    }
+
+
 }

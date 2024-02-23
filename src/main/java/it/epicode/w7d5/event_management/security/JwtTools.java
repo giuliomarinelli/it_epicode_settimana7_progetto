@@ -4,10 +4,15 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import it.epicode.w7d5.event_management.Models.entities.User;
 import it.epicode.w7d5.event_management.exceptions.UnauthorizedException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.net.http.HttpRequest;
 import java.util.Date;
 import java.util.UUID;
 
@@ -43,5 +48,22 @@ public class JwtTools {
             throw new UnauthorizedException("Invalid access token");
         }
     }
+
+    public boolean matchTokenSub(UUID userId) throws UnauthorizedException {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        HttpServletRequest req;
+        if (requestAttributes instanceof ServletRequestAttributes) {
+            req = ((ServletRequestAttributes)requestAttributes).getRequest();
+        } else {
+            return false;
+        }
+        String token = req.getHeader("Authorization").split(" ")[1];
+        UUID tokenUserId = extractUserIdFromToken(token);
+        return tokenUserId.equals(userId);
+    }
+
+
+
+
 
 }

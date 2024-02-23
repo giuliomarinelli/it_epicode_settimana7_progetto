@@ -52,13 +52,6 @@ public class JwtFilter extends OncePerRequestFilter {
             );
 
 
-//            if (req.getServletPath().startsWith("/my-profile")) {
-//                String[] path = req.getServletPath().split("/");
-//                UUID pathUserId = UUID.fromString(path[path.length - 1]);
-//                if (!pathUserId.equals(userId))
-//                    throw new UnauthorizedException("Access denied");
-//            }
-
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(u, null, u.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -70,6 +63,14 @@ public class JwtFilter extends OncePerRequestFilter {
             res.getWriter().write(mapper.writeValueAsString(
                     new HttpErrorRes(HttpStatus.UNAUTHORIZED,
                             "Unauthorized", e.getMessage()
+                    )));
+        } catch (IllegalArgumentException e) {
+            ObjectMapper mapper = new ObjectMapper();
+            res.setStatus(HttpStatus.BAD_REQUEST.value());
+            res.setContentType("application/json;charset=UTF-8");
+            res.getWriter().write(mapper.writeValueAsString(
+                    new HttpErrorRes(HttpStatus.BAD_REQUEST,
+                            "Bad request", "malformed 'uderid' query param"
                     )));
         }
     }

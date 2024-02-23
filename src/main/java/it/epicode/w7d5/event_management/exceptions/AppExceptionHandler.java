@@ -43,6 +43,12 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
                 "Internal server error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<HttpErrorRes> accessDeniedHandler(AccessDeniedException e) {
+        return new ResponseEntity<>(new HttpErrorRes(HttpStatus.UNAUTHORIZED,
+                "Unauthorized", "You don't have permissions to access this resource"), HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<HttpErrorRes> accessDeniedHandler(UnauthorizedException e) {
         return new ResponseEntity<>(new HttpErrorRes(HttpStatus.UNAUTHORIZED,
