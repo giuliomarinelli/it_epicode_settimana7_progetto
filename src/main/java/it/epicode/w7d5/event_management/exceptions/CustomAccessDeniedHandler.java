@@ -23,7 +23,9 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         res.setContentType("application/json;charset=UTF-8");
         res.setStatus(HttpStatus.UNAUTHORIZED.value());
         try {
-            res.getWriter().write(mapper.writeValueAsString(new HttpErrorRes(HttpStatus.UNAUTHORIZED, "Unauthorized", "You don't have permissions to access this resource")));
+            res.getWriter().write(mapper.writeValueAsString(
+                    new HttpErrorRes(HttpStatus.UNAUTHORIZED, "Unauthorized",
+                            "You don't have permissions to access this resource")));
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }

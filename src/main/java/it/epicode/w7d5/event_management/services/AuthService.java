@@ -7,6 +7,7 @@ import it.epicode.w7d5.event_management.exceptions.BadRequestException;
 import it.epicode.w7d5.event_management.exceptions.InternalServerErrorException;
 import it.epicode.w7d5.event_management.exceptions.UnauthorizedException;
 import it.epicode.w7d5.event_management.repositories.UserRepository;
+import it.epicode.w7d5.event_management.security.JwtTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +24,9 @@ public class AuthService {
     @Autowired
     private PasswordEncoder encoder;
 
+    @Autowired
+    private JwtTools jwtTools;
+
     public User register(UserDTO userDTO) throws BadRequestException, InternalServerErrorException {
         User user = new User(
                 userDTO.firstName(),
@@ -38,7 +42,7 @@ public class AuthService {
         }
     }
 
-    public Optional<User> findeUserById(UUID id) {
+    public Optional<User> findUserById(UUID id) {
         return userRp.findById(id);
     }
 
@@ -48,6 +52,6 @@ public class AuthService {
         );
         if (!encoder.matches(password, user.getHashPassword()))
             throw new UnauthorizedException("Email and/or password are incorrect");
-        return null;
+        return new AccessTokenRes(jwtTools.createToken(user));
     }
 }

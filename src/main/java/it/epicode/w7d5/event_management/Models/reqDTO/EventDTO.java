@@ -15,6 +15,8 @@ public record EventDTO(
         String title,
         @NotBlank(message = "'description' field is required and must not be empty")
         String description,
+        @NotBlank(message = "'location' field is required and must not be empty")
+        String location,
         @NotBlank(message = "'date' field is required and must not be empty")
         @Pattern(regexp = "^\\d{4}\\-(0[1-9]|1[012])\\-(0[1-9]|[12][0-9]|3[01])$",
             message = "Malformed 'date' field since it must exactly respect the pattern 'yyyy-mm-dd'"

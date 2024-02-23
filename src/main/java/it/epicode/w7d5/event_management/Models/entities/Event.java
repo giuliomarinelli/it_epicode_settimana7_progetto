@@ -32,6 +32,9 @@ public class Event {
     private LocalDate date;
 
     @Column(nullable = false)
+    private String location;
+
+    @Column(nullable = false)
     @Transient
     private int subscriptions;
 
@@ -49,11 +52,12 @@ public class Event {
     )
     private List<User> subscribedUsers = new ArrayList<>();
 
-    public Event(String title, String description, LocalDate date, int totalPlaces) {
+    public Event(String title, String description, LocalDate date, int totalPlaces, String location) {
         this.title = title;
         this.description = description;
         this.date = date;
         this.totalPlaces = totalPlaces;
+        this.location = location;
 
     }
 

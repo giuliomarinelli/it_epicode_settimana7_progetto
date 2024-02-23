@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -21,20 +22,25 @@ public class SecurityChain {
     private JwtTools jwtTools;
     @Autowired
     private JwtFilter jwtFilter;
+
     @Bean
-    public AccessDeniedHandler accessDeniedHandler(){
+    public AccessDeniedHandler accessDeniedHandler() {
         return new CustomAccessDeniedHandler();
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
-        httpSecurity.cors(AbstractHttpConfigurer::disable);
 
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authorizeHttpRequests(authorize -> authorize
+                        .anyRequest().permitAll()
+                );
 
-        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers("/auth/**").permitAll());
-        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers("/events/**").permitAll());
-        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers("/**").denyAll());
         httpSecurity.exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                 httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(accessDeniedHandler()));
         return httpSecurity.build();

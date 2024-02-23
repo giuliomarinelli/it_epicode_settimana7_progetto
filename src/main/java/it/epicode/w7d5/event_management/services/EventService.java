@@ -47,7 +47,8 @@ public class EventService {
                 eventDTO.title(),
                 eventDTO.description(),
                 LocalDate.parse(eventDTO.date()),
-                eventDTO.totalPlaces()
+                eventDTO.totalPlaces(),
+                eventDTO.location()
         );
         e.setSubscriptions(0);
         return eventRp.save(e);
@@ -60,6 +61,7 @@ public class EventService {
         e.setTitle(eventDTO.title());
         e.setDescription(eventDTO.description());
         e.setDate(LocalDate.parse(eventDTO.date()));
+        e.setLocation(eventDTO.location());
         if (e.getSubscribedUsers().size() > eventDTO.totalPlaces())
             throw new BadRequestException("'totalPlaces' sent field is minor than the number of " +
                     "currently subscribed users. Cannot update. You must delete exceeding subscriptions before updating");
@@ -76,6 +78,7 @@ public class EventService {
                 () -> new BadRequestException("User you're trying to subscribe to this event doesn't exist. Cannot subscribe")
         );
         e.addSubscription(u);
+        eventRp.save(e);
         return new ConfirmRes("User with id='" + userId + "' correctly subscribed to event " +
                 "'" + e.getTitle() + "' (id='" + eventId + "'", HttpStatus.OK);
     }

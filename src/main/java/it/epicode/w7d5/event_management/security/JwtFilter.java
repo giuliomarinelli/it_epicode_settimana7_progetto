@@ -47,7 +47,7 @@ public class JwtFilter extends OncePerRequestFilter {
             UUID userId = jwtTools.extractUserIdFromToken(token);
 
 
-            User u = authSvc.findeUserById(userId).orElseThrow(
+            User u = authSvc.findUserById(userId).orElseThrow(
                     () -> new UnauthorizedException("Invalid access token")
             );
 
