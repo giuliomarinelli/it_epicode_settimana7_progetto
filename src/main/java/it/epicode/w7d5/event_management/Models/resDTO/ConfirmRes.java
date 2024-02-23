@@ -7,13 +7,14 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Data
-public class DeleteRes {
+public class ConfirmRes {
     private Timestamp timestamp;
-    private int statusCode = HttpStatus.OK.value();
+    private int statusCode;
     private String message;
 
-    public DeleteRes(String message) {
+    public ConfirmRes(String message, HttpStatus httpStatus) {
         this.message = message;
         timestamp = Timestamp.valueOf(LocalDateTime.now());
+        statusCode = httpStatus.value();
     }
 }
