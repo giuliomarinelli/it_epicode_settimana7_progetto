@@ -14,7 +14,7 @@ public class HttpErrorRes {
 
     public HttpErrorRes(HttpStatus httpStatus, String error, String message) {
         timestamp = Timestamp.valueOf(LocalDateTime.now());
-        this.statusCode = httpStatus.value();
+        statusCode = httpStatus.value();
         this.error = error;
         this.message = message;
     }

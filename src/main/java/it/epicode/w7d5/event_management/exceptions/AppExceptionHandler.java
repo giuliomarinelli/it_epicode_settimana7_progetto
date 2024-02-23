@@ -24,13 +24,6 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
                 "Not found", e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(IOException.class)
-    // Gestisco un'unica eccezione di questo tipo, perciò ometto i controlli che servirebbero a contestualizzare e inquadrare l'errore
-    public ResponseEntity<HttpErrorRes> ioExceptionHandler(IOException e) {
-        return new ResponseEntity<>(new HttpErrorRes(HttpStatus.SERVICE_UNAVAILABLE,
-                "Service unavailable", "An input/output error with Cloudinary provider occurred" +
-                " during file upload. " + e.getMessage()), HttpStatus.SERVICE_UNAVAILABLE);
-    }
 
     @ExceptionHandler(InternalServerErrorException.class)
     public ResponseEntity<HttpErrorRes> internalServerErrorHandler(InternalServerErrorException e) {
