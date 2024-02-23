@@ -67,7 +67,9 @@ public class EventService {
         return u.getEvents();
     }
 
-    public Event create(EventDTO eventDTO) {
+    public Event create(EventDTO eventDTO) throws BadRequestException {
+        if (LocalDate.parse(eventDTO.date()).isBefore(LocalDate.now()))
+            throw new BadRequestException("Event 'date' sent is located in the past. Cannot create");
         Event e = new Event(
                 eventDTO.title(),
                 eventDTO.description(),
@@ -80,6 +82,8 @@ public class EventService {
     }
 
     public Event update(EventDTO eventDTO, UUID id) throws BadRequestException {
+        if (LocalDate.parse(eventDTO.date()).isBefore(LocalDate.now()))
+            throw new BadRequestException("Event 'date' sent is located in the past. Cannot update");
         Event e = eventRp.findById(id).orElseThrow(
                 () -> new BadRequestException("Event with id='" + id + "' doesn't exist. Cannot update")
         );
