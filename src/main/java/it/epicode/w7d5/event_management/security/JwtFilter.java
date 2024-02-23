@@ -35,10 +35,10 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
         try {
             String authorization = req.getHeader("Authorization");
-            if (authorization == null) {
+            if (authorization == null)
                 throw new UnauthorizedException("No provided access token");
-            } else if (!authorization.startsWith("Bearer "))
-                throw new UnauthorizedException("Access token is incorrectly provided");
+            else if (!authorization.startsWith("Bearer "))
+                throw new UnauthorizedException("malformed 'Authorization' header");
 
             String token = authorization.split(" ")[1];
 
@@ -46,11 +46,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
             UUID userId = jwtTools.extractUserIdFromToken(token);
 
-
             User u = authSvc.findUserById(userId).orElseThrow(
                     () -> new UnauthorizedException("Invalid access token")
             );
-
 
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(u, null, u.getAuthorities());
@@ -64,20 +62,12 @@ public class JwtFilter extends OncePerRequestFilter {
                     new HttpErrorRes(HttpStatus.UNAUTHORIZED,
                             "Unauthorized", e.getMessage()
                     )));
-        } catch (IllegalArgumentException e) {
-            ObjectMapper mapper = new ObjectMapper();
-            res.setStatus(HttpStatus.BAD_REQUEST.value());
-            res.setContentType("application/json;charset=UTF-8");
-            res.getWriter().write(mapper.writeValueAsString(
-                    new HttpErrorRes(HttpStatus.BAD_REQUEST,
-                            "Bad request", "malformed 'uderid' query param"
-                    )));
         }
     }
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return new AntPathMatcher().match("/auth/**", request.getServletPath());
+    protected boolean shouldNotFilter(HttpServletRequest req) throws ServletException {
+        return new AntPathMatcher().match("/auth/**", req.getServletPath());
     }
 
 

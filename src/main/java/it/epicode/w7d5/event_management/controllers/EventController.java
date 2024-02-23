@@ -23,7 +23,7 @@ public class EventController {
     EventService eventSvc;
 
     @GetMapping("/events")
-    public Page<Event> getAll(@RequestParam(required = false) UUID userid, Pageable pageable) {
+    public Page<Event> getAll(Pageable pageable) {
         return eventSvc.getAll(pageable);
     }
 
@@ -31,9 +31,10 @@ public class EventController {
     public List<Event> getByUserId(@PathVariable UUID userId) throws BadRequestException, UnauthorizedException {
         return eventSvc.findByUserId(userId);
     }
+
     @PreAuthorize("hasAuthority('EVENT_ORGANIZER')")
-    @GetMapping("/events/admin/user/{userId}")
-    public List<Event> getByUserIdForAdmin(@PathVariable UUID userId) throws BadRequestException, UnauthorizedException {
+    @GetMapping("/events/view-by-any-userid/{userId}")
+    public List<Event> getByUserIdForAdmin(@PathVariable UUID userId) throws BadRequestException {
         return eventSvc.findByUserIdWithoutControls(userId);
     }
 
@@ -57,24 +58,26 @@ public class EventController {
             throw new BadRequestException(ValidationMessages.generateValidationErrorMessage(validation));
         return eventSvc.update(eventDTO, id);
     }
+
     @PatchMapping("/events/{id}/user-subscribe")
     public ConfirmRes subscribe(@RequestBody @Validated SubscriptionDTO subscriptionDTO,
                                 BindingResult validation, @PathVariable UUID id) throws SubscriptionException, BadRequestException, UnauthorizedException {
         if (validation.hasErrors())
             throw new BadRequestException(ValidationMessages.generateValidationErrorMessage(validation));
         try {
-        return eventSvc.subscribeUserToEvent(id, UUID.fromString(subscriptionDTO.userId()));
+            return eventSvc.subscribeUserToEvent(id, UUID.fromString(subscriptionDTO.userId()));
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("'userId' field is malformed since it doesn't respect the Universal Unique ID pattern");
         }
     }
+
     @PatchMapping("/events/{id}/user-unsubscribe")
     public ConfirmRes unsubscribe(@RequestBody @Validated SubscriptionDTO subscriptionDTO,
-                                BindingResult validation, @PathVariable UUID id) throws SubscriptionException, BadRequestException, UnauthorizedException {
+                                  BindingResult validation, @PathVariable UUID id) throws SubscriptionException, BadRequestException, UnauthorizedException {
         if (validation.hasErrors())
             throw new BadRequestException(ValidationMessages.generateValidationErrorMessage(validation));
         try {
-        return eventSvc.unsubscribeUserFromEvent(id, UUID.fromString(subscriptionDTO.userId()));
+            return eventSvc.unsubscribeUserFromEvent(id, UUID.fromString(subscriptionDTO.userId()));
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("'userId' field is malformed since it doesn't respect the Universal Unique ID pattern");
         }
