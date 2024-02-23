@@ -12,6 +12,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Service
 public class AuthService {
     @Autowired
@@ -33,6 +36,10 @@ public class AuthService {
                 throw new BadRequestException("'email' already exists, cannot register");
             throw new InternalServerErrorException("Data Integrity violation error. " + e.getMessage());
         }
+    }
+
+    public Optional<User> findeUserById(UUID id) {
+        return userRp.findById(id);
     }
 
     public AccessTokenRes login(String email, String password) throws UnauthorizedException {
