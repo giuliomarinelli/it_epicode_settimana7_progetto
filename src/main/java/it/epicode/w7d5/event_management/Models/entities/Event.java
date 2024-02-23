@@ -35,7 +35,6 @@ public class Event {
     @Column(nullable = false)
     private String location;
 
-    @Column(nullable = false)
     @Transient
     private int subscriptions;
 

@@ -2,7 +2,6 @@ package it.epicode.w7d5.event_management.services;
 
 import it.epicode.w7d5.event_management.Models.entities.Event;
 import it.epicode.w7d5.event_management.Models.entities.User;
-import it.epicode.w7d5.event_management.Models.enums.UserRole;
 import it.epicode.w7d5.event_management.Models.reqDTO.EventDTO;
 import it.epicode.w7d5.event_management.Models.resDTO.ConfirmRes;
 import it.epicode.w7d5.event_management.exceptions.BadRequestException;
@@ -93,7 +92,7 @@ public class EventService {
         e.setLocation(eventDTO.location());
         if (e.getSubscribedUsers().size() > eventDTO.totalPlaces())
             throw new BadRequestException("'totalPlaces' sent field is minor than the number of " +
-                    "currently subscribed users. Cannot update. You must delete exceeding subscriptions before updating");
+                    "currently subscribed users. Cannot update");
         e.setTotalPlaces(eventDTO.totalPlaces());
         e.setSubscriptions(e.getSubscribedUsers().size());
         return eventRp.save(e);

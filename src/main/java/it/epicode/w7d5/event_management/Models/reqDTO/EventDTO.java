@@ -1,13 +1,11 @@
 package it.epicode.w7d5.event_management.Models.reqDTO;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Transient;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
-import java.time.LocalDate;
 
 public record EventDTO(
 

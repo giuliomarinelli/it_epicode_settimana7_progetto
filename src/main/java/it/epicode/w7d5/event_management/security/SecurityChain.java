@@ -43,6 +43,7 @@ public class SecurityChain {
 
         httpSecurity.exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                 httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(accessDeniedHandler()));
+
         return httpSecurity.build();
     }
 
