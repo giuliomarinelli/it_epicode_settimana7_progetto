@@ -117,12 +117,12 @@ public class EventService {
 
     public ConfirmRes unsubscribeUserFromEvent(UUID eventId, UUID userId) throws BadRequestException, UnauthorizedException {
         Event e = eventRp.findById(eventId).orElseThrow(
-                () -> new BadRequestException("Event you're trying to unsubscribe doesn't exist. Cannot unsubscribe")
+                () -> new BadRequestException("Event you're trying to unsubscribe from doesn't exist. Cannot unsubscribe")
         );
         if (e.getDate().isBefore(LocalDate.now()))
             throw new BadRequestException("Event already occurred. Cannot unsubscribe");
         User u = userRp.findById(userId).orElseThrow(
-                () -> new BadRequestException("User you're trying to unsubscribe to this event doesn't exist. Cannot subscribe")
+                () -> new BadRequestException("User you're trying to unsubscribe from this event doesn't exist. Cannot unsubscribe")
         );
         if (!jwtTools.matchTokenSub(userId))
             throw new UnauthorizedException("You don't have the permission for unsubscribing users other than you from the event");
