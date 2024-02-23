@@ -64,7 +64,7 @@ public class Event {
 
     public void addSubscription(User user) throws SubscriptionException {
         if (subscribedUsers.contains(user))
-            throw new SubscriptionException("User with id='" + user.getId() + " is already subscribed to this event. Cannot subscribe");
+            throw new SubscriptionException("User with id='" + user.getId() + "' is already subscribed to this event. Cannot subscribe");
         if (soldOut)
             throw new SubscriptionException("Event is sold out. Cannot subscribe");
         subscribedUsers.add(user);
@@ -73,7 +73,7 @@ public class Event {
 
     public void removeSubscription(User user) throws SubscriptionException {
         if (!subscribedUsers.contains(user))
-            throw new SubscriptionException("User with id='" + user.getId() + " is not subscribed to the event. Cannot unsubscribe");
+            throw new SubscriptionException("User with id='" + user.getId() + "' is not subscribed to the event. Cannot unsubscribe");
         if (soldOut) soldOut = false;
         subscribedUsers.remove(user);
     }
